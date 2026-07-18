@@ -12,6 +12,4 @@ import java.util.List;
 
 @Repository
 public interface QuizzRepo extends JpaRepository<Quizz, Integer> {
-
-    List<Question> findByCategoryRandom(@Param("numQ") int numQ, @Param("category") String category);
 }
