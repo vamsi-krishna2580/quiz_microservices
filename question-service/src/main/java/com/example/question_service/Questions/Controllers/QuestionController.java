@@ -5,6 +5,8 @@ import com.example.question_service.Questions.Models.QuestionDto;
 import com.example.question_service.Questions.Models.Response;
 import com.example.question_service.Questions.Services.QuestionService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+
+    @Autowired
+    Environment environment;
 
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
@@ -72,6 +77,7 @@ public class QuestionController {
 
     @PostMapping("getQuestions")
     public ResponseEntity<List<QuestionDto>> getQuestions(@RequestBody List<@Valid Integer> questionIds){
+        System.out.println(environment.getProperty("local.server.port"));
         return questionService.getQuestionsByIds(questionIds);
     }
 
