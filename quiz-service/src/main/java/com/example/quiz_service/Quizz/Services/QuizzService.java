@@ -39,7 +39,8 @@ public class QuizzService {
         quizz.setTitle(title);
         quizz.setQuestionIds(questionsIds);
         quizzRepo.save(quizz);
-            return new ResponseEntity<String>("Quizz Created with id = "+quizz.getId(), HttpStatus.CREATED);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Quizz Created with id = "+quizz.getId());
     }
 
     public ResponseEntity<Integer> caluclateResult(Integer id, List<Response> responses){
