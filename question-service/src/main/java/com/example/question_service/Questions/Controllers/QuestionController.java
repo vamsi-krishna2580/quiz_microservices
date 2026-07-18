@@ -4,6 +4,7 @@ import com.example.question_service.Questions.Models.Question;
 import com.example.question_service.Questions.Models.QuestionDto;
 import com.example.question_service.Questions.Models.Response;
 import com.example.question_service.Questions.Services.QuestionService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +27,13 @@ public class QuestionController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<String> createQuizz(@RequestBody Question question){
+    public ResponseEntity<String> createQuestion(@Valid @RequestBody Question question){
         questionService.createQuestion(question);
         return new ResponseEntity<>("Created", HttpStatus.CREATED);
     }
 
     @PostMapping("/many")
-    public ResponseEntity<String> createManyQuestion (@RequestBody List<Question> questions){
+    public ResponseEntity<String> createManyQuestion (@RequestBody List<@Valid Question> questions){
         questionService.createQuestions(questions);
         return ResponseEntity.ok("Questions Created");
     }
@@ -59,7 +60,7 @@ public class QuestionController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Question> updateQuestion(@PathVariable int id, @RequestBody Question question){
+    public ResponseEntity<Question> updateQuestion(@PathVariable int id, @Valid @RequestBody Question question){
         questionService.updateQuestion(id, question);
         return new ResponseEntity<>(question, HttpStatus.OK);
     }
@@ -70,14 +71,13 @@ public class QuestionController {
     }
 
     @PostMapping("getQuestions")
-    public ResponseEntity<List<QuestionDto>> getQuestions(@RequestBody List<Integer> questionIds){
+    public ResponseEntity<List<QuestionDto>> getQuestions(@RequestBody List<@Valid Integer> questionIds){
         return questionService.getQuestionsByIds(questionIds);
     }
 
     @PostMapping("getScore")
-    public ResponseEntity<Integer> getScore (@RequestBody List<Response> responses){
+    public ResponseEntity<Integer> getScore (@RequestBody List<@Valid Response> responses){
         return questionService.getScore(responses);
     }
-
 
 }

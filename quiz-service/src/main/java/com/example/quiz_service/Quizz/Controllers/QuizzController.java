@@ -1,8 +1,11 @@
 package com.example.quiz_service.Quizz.Controllers;
 
+import com.example.quiz_service.Quizz.Models.QuestionDto;
 import com.example.quiz_service.Quizz.Models.QuizDto;
+import com.example.quiz_service.Quizz.Models.Quizz;
 import com.example.quiz_service.Quizz.Models.Response;
 import com.example.quiz_service.Quizz.Services.QuizzService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,18 +20,21 @@ public class QuizzController {
         this.quizzService = quizzService;
     }
 
+    @GetMapping("getAll")
+    public ResponseEntity<List<Quizz>> getAllQuiz (){ return quizzService.getAllQuiz(); }
+
     @GetMapping("get/{id}")
-    public ResponseEntity<?> getQuizz (@PathVariable Integer id){
+    public ResponseEntity<List<QuestionDto>> getQuizz (@PathVariable Integer id){
         return quizzService.getQuizz(id);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createQuizz (@RequestBody QuizDto quizDto){
+    public ResponseEntity<String> createQuizz (@Valid @RequestBody QuizDto quizDto){
         return quizzService.createQuizz(quizDto.getTitle(), quizDto.getCategoryName(), quizDto.getNumQuestions());
     }
 
     @PostMapping("/submit/{id}")
-    public ResponseEntity<Integer> calculateResult(@PathVariable Integer id, @RequestBody List<Response> responses){
+    public ResponseEntity<Integer> calculateResult(@PathVariable Integer id, @Valid @RequestBody List<Response> responses){
         return quizzService.caluclateResult(id, responses);
     }
 }

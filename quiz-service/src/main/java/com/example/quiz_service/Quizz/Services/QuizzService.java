@@ -32,21 +32,23 @@ public class QuizzService {
     }
 
     public ResponseEntity<String> createQuizz(String title, String category, int numQ) {
-        System.out.println(category);
         List<Integer> questionsIds = quizInterface.generateQuestions(category, numQ).getBody();
-        System.out.println(questionsIds);
         Quizz quizz = new Quizz();
         quizz.setTitle(title);
         quizz.setQuestionIds(questionsIds);
         quizzRepo.save(quizz);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Quizz Created with id = "+quizz.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body("Quiz Created with id = "+quizz.getId());
     }
 
     public ResponseEntity<Integer> caluclateResult(Integer id, List<Response> responses){
-        Quizz quizz = quizzRepo.findById(id).orElseThrow(()-> new RuntimeException("Quizz not found"));
+        Quizz quizz = quizzRepo.findById(id).orElseThrow(()-> new RuntimeException("Quiz not found"));
         Integer right = quizInterface.getScore(responses).getBody();
         return ResponseEntity.ok(right);
+    }
+
+    public ResponseEntity<List<Quizz>> getAllQuiz() {
+        return ResponseEntity.ok(quizzRepo.findAll());
     }
 }
 
