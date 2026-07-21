@@ -5,7 +5,7 @@ on:
 
   push:
     branches:
-      - graalvm-native
+      - native-microservices
     paths:
       - "question-service/**"
       - ".github/workflows/windows-native-question-service.yml"
