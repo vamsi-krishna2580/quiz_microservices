@@ -1,0 +1,62 @@
+services:
+  service-registry:
+    build: ./service-registry
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+
+  question-db:
+    image: mysql:8.4
+    container_name: question-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: question_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - question-db-data:/var/lib/mysql
+
+  quiz-db:
+    image: mysql:8.4
+    container_name: quiz-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: quizdb
+    ports:
+      - "3308:3306"
+    volumes:
+      - quiz-db-data:/var/lib/mysql
+
+  question-service:
+    build: ./question-service
+    container_name: question-service
+    depends_on:
+      - service-registry
+      - question-db
+    ports:
+      - "8080:8080"
+
+  quiz-service:
+    build: ./quiz-service
+    container_name: quiz-service
+    depends_on:
+      - service-registry
+      - quiz-db
+    ports:
+      - "8090:8090"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    depends_on:
+      - service-registry
+      - question-service
+      - quiz-service
+    ports:
+      - "8765:8765"
+
+volumes:
+  question-db-data:
+  quiz-db-data:
