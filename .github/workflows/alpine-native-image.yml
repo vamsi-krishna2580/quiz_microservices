@@ -14,7 +14,7 @@ jobs:
   native-build:
     name: Build Question Service Native (Linux)
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     defaults:
       run:
@@ -37,7 +37,6 @@ jobs:
         run: |
           java -version
           native-image --version
-
       - name: Cache Maven Repository
         uses: actions/cache@v4
         with:
@@ -45,7 +44,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
       - name: Make Maven Wrapper Executable
         run: chmod +x mvnw
 
