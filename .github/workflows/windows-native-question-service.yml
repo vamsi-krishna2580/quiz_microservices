@@ -1,12 +1,13 @@
-name: Build Question Service Native Image
+name: Build Question Service Windows Native Image
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'question-service/**'
-      - '.github/workflows/question-service-native.yml'
   workflow_dispatch:
+  push:
+    branches:
+      - graalvm-native
+    paths:
+      - "question-service/**"
+      - ".github/workflows/windows-native-question-service.yml"
 
 jobs:
   native-build:
