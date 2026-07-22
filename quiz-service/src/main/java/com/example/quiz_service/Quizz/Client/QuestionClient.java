@@ -1,26 +1,27 @@
-package com.example.quiz_service.Quizz.feign;
+package com.example.quiz_service.Quizz.Client;
 
 import com.example.quiz_service.Quizz.Models.QuestionDto;
 import com.example.quiz_service.Quizz.Models.Response;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 
 import java.util.List;
 
-@FeignClient("QUESTION-SERVICE")
-public interface QuizInterface {
+@HttpExchange("/question")
+public interface QuestionClient {
 
-    @GetMapping("question/generate")
+    @GetExchange("question/generate")
     ResponseEntity<List<Integer>> generateQuestions(@RequestParam String category, @RequestParam int numQ);
 
-    @PostMapping("question/getQuestions")
+    @PostExchange("question/getQuestions")
     ResponseEntity<List<QuestionDto>> getQuestions(@RequestBody List<Integer> questionIds);
 
-    @PostMapping("question/getScore")
+    @PostExchange("question/getScore")
     ResponseEntity<Integer> getScore (@RequestBody List<Response> responses);
-
 }
