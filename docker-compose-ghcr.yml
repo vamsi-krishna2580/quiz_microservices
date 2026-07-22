@@ -1,0 +1,111 @@
+version: "3.9"
+
+services:
+
+  question-db:
+    image: mysql:8.4
+    container_name: question-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "Krishna2580.,@"
+      MYSQL_DATABASE: question_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - question-db-data:/var/lib/mysql
+    networks:
+      - quiz-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  quiz-db:
+    image: mysql:8.4
+    container_name: quiz-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "Krishna2580.,@"
+      MYSQL_DATABASE: quiz_db
+    ports:
+      - "3308:3306"
+    volumes:
+      - quiz-db-data:/var/lib/mysql
+    networks:
+      - quiz-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  eureka:
+    image: ghcr.io/vamsi-krishna2580/service-registry:latest
+    container_name: eureka
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - quiz-network
+
+  question-service:
+    image: ghcr.io/vamsi-krishna2580/question-service-native:latest
+    container_name: question-service
+    restart: unless-stopped
+    depends_on:
+      question-db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://question-db:3306/question_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "Krishna2580.,@"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    ports:
+      - "8080:8080"
+    networks:
+      - quiz-network
+
+  quiz-service:
+    image: ghcr.io/vamsi-krishna2580/quiz-service-native:latest
+    container_name: quiz-service
+    restart: unless-stopped
+    depends_on:
+      quiz-db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://quiz-db:3306/quiz_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: "Krishna2580.,@"
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    ports:
+      - "8090:8090"
+    networks:
+      - quiz-network
+
+  api-gateway:
+    image: ghcr.io/vamsi-krishna2580/api-gateway:latest
+    container_name: api-gateway
+    restart: unless-stopped
+    depends_on:
+      - eureka
+      - question-service
+      - quiz-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+    ports:
+      - "8765:8765"
+    networks:
+      - quiz-network
+
+volumes:
+  question-db-data:
+  quiz-db-data:
+
+networks:
+  quiz-network:
+    driver: bridge

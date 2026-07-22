@@ -14,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: quiz-service
+        working-directory: question-service
 
     steps:
 
@@ -39,7 +39,7 @@ jobs:
 
       - uses: docker/build-push-action@v6
         with:
-          context: ./quiz-service
-          file: ./quiz-service/Dockerfile.native
+          context: ./question-service
+          file: ./question-service/Dockerfile.native
           push: true
-          tags: ghcr.io/vamsi-krishna2580/quiz-service-native:latest
+          tags: ghcr.io/vamsi-krishna2580/question-service-native:latest
