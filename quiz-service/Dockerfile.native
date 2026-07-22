@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM ubuntu:24.04
 
 RUN apk add --no-cache \
     libstdc++
