@@ -12,4 +12,4 @@ RUN chmod +x quiz-service
 
 EXPOSE 8090
 
-ENTRYPOINT ["./quiz-service"]
+ENTRYPOINT ["./quiz-service","--spring.config.location=file:/config/application.properties"]

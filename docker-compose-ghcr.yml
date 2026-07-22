@@ -48,6 +48,8 @@ services:
       - "8761:8761"
     networks:
       - quiz-network
+    volumes:
+      - ./config/service-registry/application.properties:/config/application.properties
 
   question-service:
     image: ghcr.io/vamsi-krishna2580/question-service-native:latest
@@ -61,12 +63,14 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://question-db:3306/question_db
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: "Krishna2580.,@"
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+      SPRING_DATASOURCE_PASSWORD: Krishna2580.,@
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
     ports:
       - "8080:8080"
     networks:
       - quiz-network
+    volumes:
+      - ./config/question-service/application.properties:/config/application.properties
 
   quiz-service:
     image: ghcr.io/vamsi-krishna2580/quiz-service-native:latest
@@ -86,6 +90,8 @@ services:
       - "8090:8090"
     networks:
       - quiz-network
+    volumes:
+      - ./config/quiz-service/application.properties:/config/application.properties
 
   api-gateway:
     image: ghcr.io/vamsi-krishna2580/api-gateway:latest
@@ -101,6 +107,8 @@ services:
       - "8765:8765"
     networks:
       - quiz-network
+    volumes:
+      - ./config/api-gateway/application.properties:/config/application.properties
 
 volumes:
   question-db-data:

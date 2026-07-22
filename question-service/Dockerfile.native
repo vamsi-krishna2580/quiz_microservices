@@ -12,4 +12,4 @@ RUN chmod +x question-service
 
 EXPOSE 8080
 
-ENTRYPOINT ["./question-service"]
+ENTRYPOINT ["./question-service","--spring.config.location=file:/config/application.properties"]
