@@ -1,0 +1,53 @@
+name: Build API Gateway Windows Native Image
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - native-microservices
+    paths:
+      - "api-gateway/**"
+      - ".github/workflows/api-gateway-native.yml"
+
+jobs:
+  native-build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: api-gateway
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: graalvm
+          java-version: "25"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: true
+
+      - name: Verify Environment
+        run: |
+          java -version
+          native-image --version
+
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build Native Image
+        run: .\mvnw.cmd -DskipTests -Pnative native:compile
+
+      - name: Upload Native Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-gateway-native
+          path: api-gateway/target/*.exe
