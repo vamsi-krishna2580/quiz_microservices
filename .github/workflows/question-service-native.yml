@@ -1,13 +1,20 @@
-name: Build Question Service Native
+name: Build & Push Question Service Native
 
 on:
   workflow_dispatch:
+
   push:
     branches:
       - native-microservices
+    paths:
+      - "question-service/**"
+      - ".github/workflows/question-service-native.yml"
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-
   build:
 
     runs-on: ubuntu-latest
@@ -18,28 +25,40 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: graalvm/setup-graalvm@v1
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
         with:
           distribution: graalvm
-          java-version: '21'
+          java-version: "21"
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: maven
 
-      - name: Build Native
+      - name: Verify Environment
+        run: |
+          java -version
+          native-image --version
+
+      - name: Build Native Executable
         run: |
           chmod +x mvnw
-          ./mvnw -Pnative -DskipTests native:compile
+          ./mvnw clean -Pnative -DskipTests native:compile
 
-      - uses: docker/login-action@v3
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/build-push-action@v6
+      - name: Build & Push Docker Image
+        uses: docker/build-push-action@v6
         with:
           context: ./question-service
           file: ./question-service/Dockerfile.native
           push: true
-          tags: ghcr.io/vamsi-krishna2580/question-service-native:latest
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/question-service-native:latest
+            ghcr.io/${{ github.repository_owner }}/question-service-native:${{ github.sha }}
